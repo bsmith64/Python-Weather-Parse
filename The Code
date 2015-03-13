@@ -1,0 +1,18 @@
+from urllib2 import urlopen
+from xml.dom import minidom
+
+# Feed for Oakland
+
+feed = urlopen('http://w1.weather.gov/xml/current_obs/KOAK.xml')
+
+doc = minidom.parse(feed)
+
+loc = doc.getElementsByTagName('location')
+temp_f = doc.getElementsByTagName('temperature_string')
+time = doc.getElementsByTagName('observation_time')
+
+location = loc[0].childNodes[0].nodeValue
+temperature = temp_f[0].childNodes[0].nodeValue
+date = time[0].childNodes[0].nodeValue
+
+print 'It is %s at %s. %s' % (temperature, location, date)
