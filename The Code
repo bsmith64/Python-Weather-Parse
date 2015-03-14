@@ -1,18 +1,81 @@
+# Written by Blake Smith || 3.13.15
+
+# This is a trial weather widget.
+
 from urllib2 import urlopen
 from xml.dom import minidom
+from Tkinter import *
+import ttk
 
-# Feed for Oakland
 
-feed = urlopen('http://w1.weather.gov/xml/current_obs/KOAK.xml')
+surface = Tk()
+surface.geometry('300x500')
+surface.title('Local Weather')
 
-doc = minidom.parse(feed)
+brandBlue = "#%02x%02x%02x" % (35, 125, 173)
 
-loc = doc.getElementsByTagName('location')
-temp_f = doc.getElementsByTagName('temperature_string')
-time = doc.getElementsByTagName('observation_time')
+class Weather:
 
-location = loc[0].childNodes[0].nodeValue
-temperature = temp_f[0].childNodes[0].nodeValue
-date = time[0].childNodes[0].nodeValue
+	def __init__(self):
+	
+		self.feed = urlopen('http://w1.weather.gov/xml/current_obs/KOAK.xml')
 
-print 'It is %s at %s. %s' % (temperature, location, date)
+		self.doc = minidom.parse(self.feed)
+
+		self.loc = self.doc.getElementsByTagName('location')
+		self.temp = self.doc.getElementsByTagName('temp_f')
+		self.time = self.doc.getElementsByTagName('observation_time')
+		self.weather = self.doc.getElementsByTagName('weather')
+		self.humid = self.doc.getElementsByTagName('relative_humidity')
+		self.wnd = self.doc.getElementsByTagName('wind_string')
+
+		self.location = self.loc[0].childNodes[0].nodeValue
+		self.temperature = self.temp[0].childNodes[0].nodeValue
+		self.date = self.time[0].childNodes[0].nodeValue
+		self.conditions = self.weather[0].childNodes[0].nodeValue
+		self.humidity = self.humid[0].childNodes[0].nodeValue
+		self.wind = self.wnd[0].childNodes[0].nodeValue
+
+# S E P E R A T O R _ _ _ _ _ _ _ 
+
+findWeather = Weather()
+
+# A D D I N G  T H E  W I D G E T S - - - - - - - - - -
+
+# Location Information Span
+topSpan = Label(surface, text=findWeather.location, bg = brandBlue, fg = 'white', font=("Helvetica", 12))
+topSpan.pack(side=TOP, fill=X,)
+
+# Time Stamp
+timeSpan = Label(surface, text=findWeather.date, font=("Helvetica", 12))
+timeSpan.pack(side=TOP, fill=X)
+
+# IMAGE UPLOAD!!!!! - - - - -
+img = PhotoImage(file='icon2.gif')
+iconDisplay = Label(surface, image=img)
+iconDisplay.pack(side=TOP, pady=10)
+
+# Weather Conditions
+weatherSpan = Label(surface, text=findWeather.conditions, font=("Helvetica", 18))
+weatherSpan.pack(side=TOP, fill=X)
+
+# Temperature
+tempSpan = Label(surface, text=findWeather.temperature, font=("Helvetica", 60))
+tempSpan.pack(side=TOP, pady=20, fill=X)
+
+# Wind
+windSpan = Label(surface, text=findWeather.wind, font=("Helvetica", 16))
+windSpan.pack(side=TOP)
+
+# Humidity
+humidSpan = Label(surface, text='Humidity: %s' % (findWeather.humidity), font=("Helvetica", 16))
+humidSpan.pack(side=TOP)
+
+footer = Label(surface, text='', bg=brandBlue)
+footer.pack(side=BOTTOM, fill=X)
+
+
+
+
+# Call the loop
+surface.mainloop()
